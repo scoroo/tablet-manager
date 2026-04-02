@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet Manager - Complete Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1c1f26; color: #e0e0e0; font-family: 'Inter', 'Segoe UI', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #0b1a2e 0%, #1a2a3a 100%); border-bottom: 3px solid #1cbea8; padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+        .title-section { display: flex; align-items: center; gap: 15px; }
+        .logo { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+        .logo i { font-size: 40px; color: #1cbea8; }
+        .title-container h1 { color: #1cbea8; font-size: 1.5rem; }
+        .title-container .subtitle { color: #b0bec5; font-size: 0.9rem; }
+        .status-badge { background: rgba(0,188,212,0.1); padding: 8px 20px; border-radius: 30px; border: 1px solid #1cbea8; display: flex; align-items: center; gap: 10px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #4caf50; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .info-bar { background: #2a2e38; border-radius: 12px; padding: 15px 25px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border: 1px solid #1cbea8; }
+        .server-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .online-status { color: #4caf50; display: flex; align-items: center; gap: 8px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        @media (max-width: 800px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        .stat-card { background: #2a2e38; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #1cbea8; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,188,212,0.2); }
+        .stat-icon { width: 50px; height: 50px; background: rgba(28,190,168,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #1cbea8; }
+        .stat-icon.online { color: #4caf50; }
+        .stat-icon.offline { color: #ff9800; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #1cbea8; }
+        .stat-label { color: #b0bec5; font-size: 0.8rem; text-transform: uppercase; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #37474f; flex-wrap: wrap; }
+        .tab-btn { background: none; border: none; padding: 12px 24px; font-size: 1rem; cursor: pointer; color: #b0bec5; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .tab-btn.active { color: #1cbea8; border-bottom: 2px solid #1cbea8; }
+        .tab-btn:hover { color: #1cbea8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Cards */
+        .card { background: #2a2e38; border-radius: 16px; border: 1px solid #1cbea8; overflow: hidden; margin-bottom: 30px; }
+        .card-header { background: #1c1f26; padding: 20px; border-bottom: 1px solid #1cbea8; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .card-header h2 { color: #1cbea8; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+        .card-actions { display: flex; gap: 10px; }
+        .card-body { padding: 20px; }
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 800px) { .grid-2col { grid-template-columns: 1fr; } }
+
+        /* Device Table */
+        .device-table { width: 100%; border-collapse: collapse; }
+        .device-table th, .device-table td { padding: 12px; text-align: left; border-bottom: 1px solid #37474f; }
+        .device-table th { color: #1cbea8; background: #1c1f26; }
+        .device-table tr:hover { background: #232831; }
+        .online-badge { color: #4caf50; font-weight: bold; }
+        .offline-badge { color: #ff9800; font-weight: bold; }
+        .empty-state { text-align: center; padding: 40px; color: #888; }
+
+        /* Buttons */
+        .btn-primary { background: #1cbea8; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
+        .btn-primary:hover:not(:disabled) { background: #159e8c; transform: translateY(-2px); }
+        .btn-primary:disabled { background: #37474f; cursor: not-allowed; }
+        .btn-secondary { background: #37474f; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-secondary:hover { background: #1cbea8; }
+        .btn-small { background: #1cbea8; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        .action-btn { background: #1cbea8; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin: 2px; font-size: 0.75rem; }
+        .action-btn:hover { background: #159e8c; }
+        .delete-btn { background: #f44336; }
+        .delete-btn:hover { background: #d32f2f; }
+        .install-btn { background: #2196f3; }
+
+        /* File Drop */
+        .file-drop { border: 2px dashed #1cbea8; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; background: #1c1f26; transition: 0.3s; }
+        .file-drop:hover { background: #232831; border-color: #4fc3f7; }
+        .apk-item { background: #1c1f26; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #1cbea8; }
+        .apk-name { font-weight: bold; }
+        .apk-size { font-size: 0.7rem; color: #888; margin-top: 4px; }
+
+        /* Selection Controls */
+        .selection-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        .checkbox-list, .radio-list { max-height: 300px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #37474f; border-radius: 8px; padding: 10px; }
+        .checkbox-item, .radio-item { padding: 10px; margin: 5px 0; background: #1c1f26; border-radius: 6px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .checkbox-item:hover, .radio-item:hover { background: #232831; }
+        .checkbox-item input, .radio-item input { width: 18px; height: 18px; cursor: pointer; }
+        .device-online { color: #4caf50; font-size: 0.7rem; margin-left: auto; }
+        .device-offline { color: #ff9800; font-size: 0.7rem; margin-left: auto; }
+
+        /* QR Container */
+        .qr-container { background: white; padding: 20px; border-radius: 12px; display: inline-block; margin-bottom: 15px; }
+        .qr-placeholder { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 8px; }
+        .enrollment-url { margin: 15px 0; font-size: 0.8rem; word-break: break-all; color: #b0bec5; }
+
+        /* Info Note */
+        .info-note { background: rgba(255,152,0,0.1); border-left: 4px solid #ff9800; padding: 10px; margin-top: 15px; border-radius: 8px; font-size: 0.8rem; color: #b0bec5; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #b0bec5; }
+        .form-input { width: 100%; padding: 12px; background: #1c1f26; border: 1px solid #1cbea8; border-radius: 8px; color: white; font-size: 1rem; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #2a2e38; border-radius: 16px; max-width: 500px; width: 90%; border: 2px solid #1cbea8; }
+        .modal-header { padding: 20px; border-bottom: 1px solid #1cbea8; display: flex; justify-content: space-between; align-items: center; }
+        .close-modal { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .modal-body { padding: 20px; }
+        .progress-bar { height: 20px; background: #1c1f26; border-radius: 10px; overflow: hidden; margin-top: 15px; }
+        .progress-fill { height: 100%; background: #1cbea8; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; }
+
+        /* Footer */
+        .footer { background: #0f1a24; border-top: 2px solid #1cbea8; padding: 20px 30px; margin-top: 40px; text-align: center; }
+        .footer-divider { width: 50px; height: 2px; background: #1cbea8; margin: 10px auto; opacity: 0.5; }
+        .footer-text { color: #b0bec5; }
+        .footer-text span { color: #1cbea8; font-weight: bold; }
+
+        @media (max-width: 600px) { .main-content { padding: 15px; } .device-table th, .device-table td { padding: 8px; font-size: 0.7rem; } .tabs { flex-direction: column; } .tab-btn { text-align: left; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="title-section">
+            <div class="logo"><i class="fas fa-tablet-alt"></i></div>
+            <div class="title-container">
+                <h1>Tablet Management System</h1>
+                <div class="subtitle">Centralized App Update & Device Management</div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Server Active</span>
+            <span id="deviceCount">0 devices</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="info-bar">
+            <div class="server-info">
+                <i class="fas fa-server"></i>
+                <span>Server: <strong id="serverIP">Loading...</strong></span>
+                <span><i class="fas fa-qrcode"></i> <a href="#" onclick="showQR()">Access QR</a></span>
+            </div>
+            <div class="online-status">
+                <i class="fas fa-circle" style="color: #4caf50; font-size: 12px;"></i>
+                <span>Auto-discovering devices...</span>
+            </div>
+            <button class="btn-small" onclick="manualScan()"><i class="fas fa-search"></i> Scan Now</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-mobile-alt"></i></div><div class="stat-info"><div class="stat-number" id="totalDevices">0</div><div class="stat-label">Total Devices</div></div></div>
+            <div class="stat-card"><div class="stat-icon online"><i class="fas fa-wifi"></i></div><div class="stat-info"><div class="stat-number" id="onlineDevices">0</div><div class="stat-label">Online</div></div></div>
+            <div class="stat-card"><div class="stat-icon offline"><i class="fas fa-plug"></i></div><div class="stat-info"><div class="stat-number" id="offlineDevices">0</div><div class="stat-label">Offline</div></div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-info"><div class="stat-number" id="apkCount">0</div><div class="stat-label">APKs Available</div></div></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('devices')"><i class="fas fa-tablet-alt"></i> Devices (<span id="tabDeviceCount">0</span>)</button>
+            <button class="tab-btn" onclick="switchTab('apks')"><i class="fas fa-box"></i> APK Library (<span id="tabApkCount">0</span>)</button>
+            <button class="tab-btn" onclick="switchTab('install')"><i class="fas fa-rocket"></i> Bulk Install</button>
+            <button class="tab-btn" onclick="switchTab('enroll')"><i class="fas fa-qrcode"></i> Enroll Tablets</button>
+        </div>
+
+        <!-- Devices Tab -->
+        <div id="devicesTab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tablet-alt"></i> Discovered Devices</h2>
+                    <div class="card-actions">
+                        <button class="btn-secondary" onclick="refreshDevices()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        <button class="btn-secondary" onclick="detectAllDevices()"><i class="fas fa-microchip"></i> Detect All</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="info-note" style="margin-bottom: 15px;">
+                        <i class="fas fa-info-circle"></i> 
+                        Devices on your local network are automatically discovered and added. Click "Detect" to get device details.
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="device-table">
+                            <thead><tr><th>Device Name</th><th>IP</th><th>Model</th><th>Status</th><th>Android</th><th>Battery</th><th>Installed Apps</th><th>Actions</th></tr></thead>
+                            <tbody id="devicesList"><tr><td colspan="8" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Scanning network...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APK Library Tab -->
+        <div id="apksTab" class="tab-content">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header"><h2><i class="fas fa-upload"></i> Upload APK</h2></div>
+                    <div class="card-body">
+                        <div class="file-drop" id="apkDrop">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #1cbea8;"></i>
+                            <div><strong>Click or drag APK file here</strong></div>
+                            <div style="font-size: 0.8rem;">Upload APK to add to library</div>
+                            <input type="file" id="apkInput" accept=".apk" style="display: none;">
+                        </div>
+                        <div id="uploadStatus"></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2><i class="fas fa-box"></i> APK Library</h2></div>
+                    <div class="card-body">
+                        <div id="apkList" class="apk-list"><div class="empty-state">No APKs uploaded yet</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Install Tab -->
+        <div id="installTab" class="tab-content">
+            <div class="card">
+                <div class="card-header"><h2><i class="fas fa-rocket"></i> Bulk Install - Multiple Devices & Multiple APKs</h2></div>
+                <div class="card-body">
+                    <div class="grid-2col">
+                        <div>
+                            <h3><i class="fas fa-mobile-alt"></i> Select Devices</h3>
+                            <div class="selection-controls">
+                                <button class="btn-small" onclick="selectAllDevices()"><i class="fas fa-check-square"></i> Select All</button>
+                                <button class="btn-small" onclick="deselectAllDevices()"><i class="fas fa-square"></i> Deselect All</button>
+                                <button class="btn-small" onclick="selectOnlineDevices()"><i class="fas fa-wifi"></i> Select Online Only</button>
+                                <span id="selectedDevicesCount" style="margin-left: 10px;">0 selected</span>
+                            </div>
+                            <div id="bulkDeviceList" class="checkbox-list"></div>
+                        </div>
+                        <div>
+                            <h3><i class="fas fa-box"></i> Select APKs to Install</h3>
+                            <div class="selection-controls">
+                                <button class="btn-small" onclick="selectAllApks()"><i class="fas fa-check-square"></i> Select All APKs</button>
+                                <button class="btn-small" onclick="deselectAllApks()"><i class="fas fa-square"></i> Deselect All</button>
+                                <span id="selectedApksCount" style="margin-left: 10px;">0 selected</span>
+                            </div>
+                            <div id="bulkApkList" class="checkbox-list"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn-primary" onclick="bulkInstallMultiple()" id="bulkInstallBtn" disabled>
+                            <i class="fas fa-rocket"></i> Install <span id="installSummary">0 APKs on 0 Devices</span>
+                        </button>
+                    </div>
+                    <div id="bulkProgress" style="display: none; margin-top: 20px;">
+                        <div class="progress-bar"><div class="progress-fill" id="bulkProgressFill"></div></div>
+                        <p id="bulkProgressStatus" style="margin-top: 10px;"></p>
+                    </div>
+                    <div id="bulkResult" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enroll Tab -->
+        <div id="enrollTab" class="tab-content">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header"><h2><i class="fas fa-qrcode"></i> Wireless ADB Setup (No USB Needed!)</h2></div>
+                    <div class="card-body" style="text-align: center;">
+                        <div id="adbQrContainer" class="qr-container">
+                            <div class="qr-placeholder"><i class="fas fa-spinner fa-spin"></i> Generating QR code...</div>
+                        </div>
+                        <div class="enrollment-url" id="adbQrUrl"></div>
+                        <button class="btn-secondary" onclick="downloadADBQRCode()"><i class="fas fa-download"></i> Download QR Code</button>
+                        <div class="info-note" style="margin-top: 15px; text-align: left;">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>How to connect a tablet (One QR code only):</strong><br><br>
+                            <strong>1.</strong> Scan the QR code above with your tablet's camera<br>
+                            <strong>2.</strong> On your tablet, go to <strong>Settings → Developer Options</strong><br>
+                            <strong>3.</strong> Turn ON <strong>Wireless Debugging</strong><br>
+                            <strong>4.</strong> Tap <strong>"Pair device with pairing code"</strong><br>
+                            <strong>5.</strong> Enter the 6-digit code shown on the webpage<br>
+                            <strong>6.</strong> Done! Tablet is automatically enrolled
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2><i class="fas fa-plus-circle"></i> Manually Add Tablet</h2></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label><i class="fas fa-network-wired"></i> IP Address</label>
+                            <input type="text" id="manualIP" placeholder="e.g., 192.168.0.101" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Device Name (Optional)</label>
+                            <input type="text" id="manualName" placeholder="e.g., Classroom Tablet 1" class="form-input">
+                        </div>
+                        <button class="btn-primary" onclick="addManualTablet()"><i class="fas fa-plus"></i> Add Tablet</button>
+                        <div class="info-note" style="margin-top: 15px;"><i class="fas fa-info-circle"></i> Make sure ADB over WiFi is enabled on the tablet first.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-divider"></div>
+        <div class="footer-text">© 2026 <span>scoroo</span>. All rights reserved.</div>
+        <div style="color: #4a5a6a; font-size: 0.8rem;">Centralized App Update & Device Management • Local Network Only</div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content" style="max-width: 350px; text-align: center;">
+            <div class="modal-header"><h3>QR Code Access</h3><button class="close-modal" onclick="closeQRModal()">&times;</button></div>
+            <div class="modal-body"><div id="qrCodeImg"></div><p>Scan to open management console</p><p style="font-size: 0.8rem;" id="qrUrl"></p></div>
+        </div>
+    </div>
+
+    <div id="progressModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 id="progressTitle">Processing</h3><button class="close-modal" onclick="closeProgressModal()">&times;</button></div>
+            <div class="modal-body"><p id="modalMessage"></p><div class="progress-bar"><div class="progress-fill" id="modalProgress"></div></div><p id="modalStatus"></p></div>
+        </div>
+    </div>
+
+    <script>
+        // ============ GLOBAL VARIABLES ============
+        let devices = [];
+        let apks = [];
+        let selectedDevicesMulti = new Set();
+        let selectedApksMulti = new Set();
+
+        // ============ INITIALIZATION ============
+        async function init() {
+            await loadServerInfo();
+            await loadStats();
+            await loadDevices();
+            await loadApks();
+            await loadADBQRCode();
+            setupFileDrop();
+            setInterval(() => { loadStats(); loadDevices(); }, 30000);
+        }
+
+        // ============ SERVER & STATS ============
+        async function loadServerInfo() {
+            try {
+                const res = await fetch('/api/info');
+                const data = await res.json();
+                document.getElementById('serverIP').textContent = data.localIP;
+                document.getElementById('deviceCount').textContent = data.tabletCount + ' devices';
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('totalDevices').textContent = data.total;
+                document.getElementById('onlineDevices').textContent = data.online;
+                document.getElementById('offlineDevices').textContent = data.offline;
+                document.getElementById('apkCount').textContent = data.apkCount;
+                document.getElementById('tabDeviceCount').textContent = data.total;
+                document.getElementById('tabApkCount').textContent = data.apkCount;
+            } catch(e) { console.error(e); }
+        }
+
+        // ============ DEVICES ============
+        async function loadDevices() {
+            try {
+                const res = await fetch('/api/devices');
+                devices = await res.json();
+                renderDevices();
+                renderBulkDeviceList();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderDevices() {
+            const tbody = document.getElementById('devicesList');
+            if (devices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No devices found. Devices will appear automatically when connected to the network.</td></tr>';
+                return;
+            }
+            let html = '';
+            devices.forEach(d => {
+                const statusClass = d.online ? 'online-badge' : 'offline-badge';
+                const statusText = d.online ? '🟢 Online' : '🟠 Offline';
+                const model = d.manufacturer !== 'Unknown' ? `${d.manufacturer} ${d.model}` : (d.model !== 'Unknown' ? d.model : 'Click Detect');
+                const battery = d.battery > 0 ? `${d.battery}%` : '?';
+                const installedCount = d.installedApps ? Object.keys(d.installedApps).length : 0;
+                html += `<tr>
+                    <td contenteditable="true" onblur="renameDevice('${d.id}', this.innerText)"><strong>${escapeHtml(d.name)}</strong></td>
+                    <td>${d.ip}</td>
+                    <td style="font-size:0.8rem;">${escapeHtml(model)}</td>
+                    <td class="${statusClass}">${statusText}</td>
+                    <td>📱 ${d.androidVersion !== 'Unknown' ? d.androidVersion : '?'}</td>
+                    <td>🔋 ${battery}</td>
+                    <td>📦 ${installedCount} app(s)</td>
+                    <td>
+                        <button class="action-btn" onclick="detectDevice('${d.id}')"><i class="fas fa-microchip"></i> Detect</button>
+                        <button class="action-btn install-btn" onclick="showInstallOptions('${d.id}')"><i class="fas fa-download"></i> Install</button>
+                        <button class="action-btn delete-btn" onclick="deleteDevice('${d.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function detectDevice(deviceId) {
+            showProgress('Detecting Device', 'Connecting to tablet...');
+            try {
+                const res = await fetch(`/api/get-device-info/${deviceId}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    updateProgress(100, `Detected: ${data.deviceInfo.displayName}`);
+                    setTimeout(() => closeProgressModal(), 1500);
+                    await loadDevices();
+                } else {
+                    updateProgress(0, 'Failed: ' + data.error);
+                    setTimeout(() => closeProgressModal(), 2000);
+                }
+            } catch(e) { updateProgress(0, 'Error: ' + e.message); }
+        }
+
+        async function detectAllDevices() {
+            showProgress('Detecting All Devices', 'Please wait...');
+            try {
+                const res = await fetch('/api/get-all-device-info', { method: 'POST' });
+                const data = await res.json();
+                updateProgress(100, `Detected ${data.devices.length} devices`);
+                setTimeout(() => closeProgressModal(), 1500);
+                await loadDevices();
+            } catch(e) { updateProgress(0, 'Error: ' + e.message); }
+        }
+
+        async function renameDevice(deviceId, newName) {
+            await fetch('/api/rename/' + deviceId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName })
+            });
+        }
+
+        async function deleteDevice(deviceId) {
+            if (!confirm('Remove this device?')) return;
+            await fetch(`/api/device/${deviceId}`, { method: 'DELETE' });
+            await loadDevices();
+            await loadStats();
+        }
+
+        async function manualScan() {
+            const res = await fetch('/api/scan');
+            const data = await res.json();
+            alert(`Scan complete! Found ${data.devicesFound} devices.`);
+            await loadDevices();
+            await loadStats();
+        }
+
+        async function refreshDevices() {
+            await loadDevices();
+            await loadStats();
+        }
+
+        // ============ APK MANAGEMENT ============
+        async function loadApks() {
+            try {
+                const res = await fetch('/api/apks');
+                apks = await res.json();
+                renderApks();
+                renderBulkApkList();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderApks() {
+            const container = document.getElementById('apkList');
+            if (apks.length === 0) {
+                container.innerHTML = '<div class="empty-state">No APKs uploaded. Drag and drop an APK file above.</div>';
+                return;
+            }
+            let html = '';
+            apks.forEach(apk => {
+                html += `<div class="apk-item">
+                    <div><div class="apk-name"><i class="fas fa-file"></i> ${escapeHtml(apk.name)}</div><div class="apk-size">${apk.sizeMB} MB • Uploaded ${new Date(apk.uploadedAt).toLocaleDateString()}</div></div>
+                    <div><button class="action-btn delete-btn" onclick="deleteApk('${apk.id}')"><i class="fas fa-trash"></i> Delete</button></div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        async function deleteApk(apkId) {
+            if (!confirm('Delete this APK from library?')) return;
+            await fetch(`/api/apk/${apkId}`, { method: 'DELETE' });
+            await loadApks();
+            await loadStats();
+        }
+
+        function setupFileDrop() {
+            const dropZone = document.getElementById('apkDrop');
+            const fileInput = document.getElementById('apkInput');
+            dropZone.addEventListener('click', () => fileInput.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.apk')) await uploadApk(file);
+                else alert('Please drop an APK file');
+            });
+            fileInput.addEventListener('change', async (e) => { if (e.target.files[0]) await uploadApk(e.target.files[0]); });
+        }
+
+        async function uploadApk(file) {
+            showProgress('Uploading APK', `Uploading ${file.name}...`);
+            const formData = new FormData();
+            formData.append('apk', file);
+            try {
+                const res = await fetch('/api/upload-apk', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    updateProgress(100, 'Upload complete!');
+                    setTimeout(() => closeProgressModal(), 1500);
+                    await loadApks();
+                    await loadStats();
+                    document.getElementById('uploadStatus').innerHTML = `<div class="info-note">✅ ${data.message}</div>`;
+                    setTimeout(() => document.getElementById('uploadStatus').innerHTML = '', 3000);
+                } else { updateProgress(0, 'Upload failed'); }
+            } catch(e) { updateProgress(0, 'Error: ' + e.message); }
+        }
+
+        // ============ BULK INSTALL ============
+        function renderBulkDeviceList() {
+            const container = document.getElementById('bulkDeviceList');
+            if (devices.length === 0) { container.innerHTML = '<div class="empty-state">No devices available</div>'; return; }
+            let html = '';
+            devices.forEach(device => {
+                const isChecked = selectedDevicesMulti.has(device.id);
+                const statusClass = device.online ? 'device-online' : 'device-offline';
+                const statusText = device.online ? '🟢 Online' : '🟠 Offline';
+                html += `<label class="checkbox-item"><input type="checkbox" value="${device.id}" ${isChecked ? 'checked' : ''} onchange="toggleDeviceMulti('${device.id}', this.checked)"><strong>${escapeHtml(device.name)}</strong><span style="font-size:0.8rem; color:#888;">(${device.ip})</span><span class="${statusClass}">${statusText}</span></label>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('selectedDevicesCount').innerText = selectedDevicesMulti.size;
+            updateInstallSummary();
+        }
+
+        function renderBulkApkList() {
+            const container = document.getElementById('bulkApkList');
+            if (apks.length === 0) { container.innerHTML = '<div class="empty-state">No APKs available. Upload some APKs first.</div>'; return; }
+            let html = '';
+            apks.forEach(apk => {
+                const isChecked = selectedApksMulti.has(apk.id);
+                html += `<label class="checkbox-item"><input type="checkbox" value="${apk.id}" ${isChecked ? 'checked' : ''} onchange="toggleApkMulti('${apk.id}', this.checked)"><strong>${escapeHtml(apk.name)}</strong><span class="apk-size">${apk.sizeMB} MB</span></label>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('selectedApksCount').innerText = selectedApksMulti.size;
+            updateInstallSummary();
+        }
+
+        function toggleDeviceMulti(deviceId, isChecked) {
+            if (isChecked) selectedDevicesMulti.add(deviceId);
+            else selectedDevicesMulti.delete(deviceId);
+            document.getElementById('selectedDevicesCount').innerText = selectedDevicesMulti.size;
+            updateInstallSummary();
+        }
+
+        function toggleApkMulti(apkId, isChecked) {
+            if (isChecked) selectedApksMulti.add(apkId);
+            else selectedApksMulti.delete(apkId);
+            document.getElementById('selectedApksCount').innerText = selectedApksMulti.size;
+            updateInstallSummary();
+        }
+
+        function selectAllDevices() { devices.forEach(device => { if (device.online) selectedDevicesMulti.add(device.id); }); renderBulkDeviceList(); updateInstallSummary(); }
+        function selectOnlineDevices() { devices.forEach(device => { if (device.online) selectedDevicesMulti.add(device.id); }); renderBulkDeviceList(); updateInstallSummary(); }
+        function deselectAllDevices() { selectedDevicesMulti.clear(); renderBulkDeviceList(); updateInstallSummary(); }
+        function selectAllApks() { apks.forEach(apk => selectedApksMulti.add(apk.id)); renderBulkApkList(); updateInstallSummary(); }
+        function deselectAllApks() { selectedApksMulti.clear(); renderBulkApkList(); updateInstallSummary(); }
+
+        function updateInstallSummary() {
+            const deviceCount = selectedDevicesMulti.size;
+            const apkCount = selectedApksMulti.size;
+            const summary = document.getElementById('installSummary');
+            const btn = document.getElementById('bulkInstallBtn');
+            if (summary) summary.innerText = `${apkCount} APK${apkCount !== 1 ? 's' : ''} on ${deviceCount} Device${deviceCount !== 1 ? 's' : ''}`;
+            if (btn) btn.disabled = deviceCount === 0 || apkCount === 0;
+        }
+
+        async function bulkInstallMultiple() {
+            const deviceIds = Array.from(selectedDevicesMulti);
+            const apkIds = Array.from(selectedApksMulti);
+            if (deviceIds.length === 0 || apkIds.length === 0) { alert('Please select at least one device and one APK'); return; }
+            const totalJobs = deviceIds.length * apkIds.length;
+            if (!confirm(`Install ${apkIds.length} APK(s) on ${deviceIds.length} device(s)?\n\nTotal installations: ${totalJobs}\n\nThis may take a while. Continue?`)) return;
+            
+            const progressDiv = document.getElementById('bulkProgress');
+            const progressFill = document.getElementById('bulkProgressFill');
+            const progressStatus = document.getElementById('bulkProgressStatus');
+            const resultDiv = document.getElementById('bulkResult');
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressStatus.innerText = 'Starting installation...';
+            resultDiv.innerHTML = '';
+            
+            let completed = 0, successCount = 0, failCount = 0;
+            const results = [];
+            
+            for (const deviceId of deviceIds) {
+                const device = devices.find(d => d.id === deviceId);
+                if (!device || !device.online) {
+                    results.push({ deviceId, error: 'Device offline', apks: [] });
+                    failCount += apkIds.length;
+                    completed += apkIds.length;
+                    continue;
+                }
+                for (const apkId of apkIds) {
+                    const apk = apks.find(a => a.id === apkId);
+                    try {
+                        const response = await fetch(`/api/install/${deviceId}/${apkId}`, { method: 'POST' });
+                        const result = await response.json();
+                        if (result.success) { successCount++; results.push({ deviceName: device.name, apkName: apk.name, success: true }); }
+                        else { failCount++; results.push({ deviceName: device.name, apkName: apk.name, success: false, error: result.error }); }
+                    } catch (error) { failCount++; results.push({ deviceName: device.name, apkName: apk.name, success: false, error: error.message }); }
+                    completed++;
+                    const percent = (completed / totalJobs) * 100;
+                    progressFill.style.width = percent + '%';
+                    progressStatus.innerText = `Progress: ${completed}/${totalJobs} installations (✅ ${successCount} / ❌ ${failCount})`;
+                }
+            }
+            progressFill.style.width = '100%';
+            progressStatus.innerText = `Complete! ✅ Success: ${successCount} / ❌ Failed: ${failCount}`;
+            
+            let resultHtml = '<div class="info-note" style="margin-top: 15px; max-height: 200px; overflow-y: auto;"><strong>Installation Results:</strong><br>';
+            resultHtml += `✅ Successful: ${successCount}<br>❌ Failed: ${failCount}<br><br>`;
+            const groupedResults = {};
+            results.forEach(r => { if (r.deviceName) { if (!groupedResults[r.deviceName]) groupedResults[r.deviceName] = []; groupedResults[r.deviceName].push(r); } });
+            for (const [deviceName, installs] of Object.entries(groupedResults)) {
+                resultHtml += `<div style="margin-top: 10px;"><strong>📱 ${deviceName}:</strong><br>`;
+                installs.forEach(install => {
+                    if (install.success) resultHtml += `  ✅ ${install.apkName}<br>`;
+                    else resultHtml += `  ❌ ${install.apkName}: ${install.error}<br>`;
+                });
+                resultHtml += `</div>`;
+            }
+            resultHtml += '</div>';
+            resultDiv.innerHTML = resultHtml;
+            setTimeout(() => loadDevices(), 2000);
+        }
+
+        function showInstallOptions(deviceId) {
+            if (apks.length === 0) { alert('No APKs available. Please upload an APK first.'); return; }
+            let options = 'Select APK to install:\n\n';
+            apks.forEach((apk, i) => { options += `${i+1}. ${apk.name} (${apk.sizeMB} MB)\n`; });
+            const choice = prompt(options + '\n\nEnter number (or type "all" for all APKs):');
+            if (choice === 'all') { installMultipleApks(deviceId, apks.map(a => a.id)); }
+            else if (choice && !isNaN(choice)) { const idx = parseInt(choice) - 1; if (apks[idx]) installSingleApk(deviceId, apks[idx].id); else alert('Invalid selection'); }
+        }
+
+        async function installSingleApk(deviceId, apkId) {
+            showProgress('Installing', 'Installing APK...');
+            try {
+                const res = await fetch(`/api/install/${deviceId}/${apkId}`, { method: 'POST' });
+                const data = await res.json();
+                updateProgress(100, data.message);
+                setTimeout(() => closeProgressModal(), 1500);
+                await loadDevices();
+            } catch(e) { updateProgress(0, 'Error: ' + e.message); }
+        }
+
+        async function installMultipleApks(deviceId, apkIds) {
+            showProgress('Installing Multiple APKs', `Installing ${apkIds.length} APK(s)...`);
+            try {
+                const res = await fetch(`/api/install-multiple/${deviceId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apkIds })
+                });
+                const data = await res.json();
+                updateProgress(100, `Success: ${data.results.success.length}, Failed: ${data.results.failed.length}`);
+                setTimeout(() => closeProgressModal(), 2000);
+                await loadDevices();
+            } catch(e) { updateProgress(0, 'Error: ' + e.message); }
+        }
+
+        // ============ ENROLLMENT ============
+        async function addManualTablet() {
+            const ip = document.getElementById('manualIP').value.trim();
+            const name = document.getElementById('manualName').value.trim();
+            if (!ip) { alert('Please enter an IP address'); return; }
+            try {
+                const response = await fetch('/api/add-tablet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip, name })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    document.getElementById('manualIP').value = '';
+                    document.getElementById('manualName').value = '';
+                    await loadDevices();
+                    await loadStats();
+                } else alert('Error: ' + result.error);
+            } catch (error) { alert('Error adding tablet: ' + error.message); }
+        }
+
+        async function loadADBQRCode() {
+            try {
+                const response = await fetch('/api/generate-adb-qr');
+                const data = await response.json();
+                if (data.success) {
+                    const qrContainer = document.getElementById('adbQrContainer');
+                    if (qrContainer) {
+                        qrContainer.innerHTML = `<img src="${data.qrCode}" style="width: 200px; height: 200px;" alt="ADB Setup QR Code">`;
+                        document.getElementById('adbQrUrl').innerHTML = `<i class="fas fa-link"></i> ${data.url}`;
+                    }
+                }
+            } catch (error) { console.error('Error loading ADB QR code:', error); }
+        }
+
+        function downloadADBQRCode() {
+            const qrImg = document.querySelector('#adbQrContainer img');
+            if (qrImg) {
+                const link = document.createElement('a');
+                link.download = 'wireless-adb-setup.png';
+                link.href = qrImg.src;
+                link.click();
+            }
+        }
+
+        async function showQR() {
+            const res = await fetch('/api/generate-qr');
+            const data = await res.json();
+            document.getElementById('qrCodeImg').innerHTML = `<img src="${data.qrCode}" style="width: 200px;">`;
+            document.getElementById('qrUrl').innerHTML = data.url;
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+
+        function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; }
+
+        // ============ PROGRESS MODAL ============
+        function showProgress(title, message) {
+            document.getElementById('progressTitle').innerHTML = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalProgress').style.width = '0%';
+            document.getElementById('modalStatus').textContent = 'Starting...';
+            document.getElementById('progressModal').style.display = 'flex';
+        }
+
+        function updateProgress(percent, status) {
+            document.getElementById('modalProgress').style.width = percent + '%';
+            document.getElementById('modalStatus').textContent = status;
+        }
+
+        function closeProgressModal() { document.getElementById('progressModal').style.display = 'none'; }
+
+        // ============ TAB SWITCHING ============
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            const tabs = { 'devices': 0, 'apks': 1, 'install': 2, 'enroll': 3 };
+            document.querySelectorAll('.tab-btn')[tabs[tabName]].classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            if (tabName === 'enroll') loadADBQRCode();
+            if (tabName === 'install') { renderBulkDeviceList(); renderBulkApkList(); updateInstallSummary(); }
+        }
+
+        function escapeHtml(text) { if (!text) return 'Unknown'; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        init();
+    </script>
+</body>
+</html>

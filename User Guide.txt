@@ -1,0 +1,520 @@
+================================================================================
+                    TABLET MANAGER SYSTEM - COMPLETE USER GUIDE
+================================================================================
+
+Version: 2.0
+Last Updated: 2026
+
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+1. SYSTEM OVERVIEW
+2. WHAT YOU NEED
+3. FIRST TIME SETUP (PC)
+4. FIRST TIME SETUP (TABLET)
+5. ENABLING ADB OVER WIFI (ONE TIME PER TABLET)
+6. STARTING THE SERVER
+7. USING THE WEB INTERFACE
+8. UPLOADING & INSTALLING APPS
+9. BULK INSTALL (MULTIPLE DEVICES + MULTIPLE APKS)
+10. ENROLL TAB - QR CODE SETUP
+11. TROUBLESHOOTING
+12. BATCH FILES EXPLAINED
+13. QUICK REFERENCE CARD
+
+
+================================================================================
+1. SYSTEM OVERVIEW
+================================================================================
+
+The Tablet Management System allows you to:
+- Control multiple Android tablets from one PC
+- Upload and manage multiple APK files
+- Install apps on one or many tablets simultaneously
+- View device info (model, Android version, battery)
+- No internet required - works on your local network
+
+
+================================================================================
+2. WHAT YOU NEED
+================================================================================
+
+HARDWARE:
+---------
+- Windows PC (10 or 11)
+- Android tablets (Android 11+ recommended)
+- USB cables (data transfer capable, not just charging)
+- USB hub (optional - for connecting multiple tablets at once)
+- Same WiFi network for all devices
+
+SOFTWARE:
+---------
+- Node.js (included in the package)
+- Your custom APK files
+
+
+================================================================================
+3. FIRST TIME SETUP (PC)
+================================================================================
+
+STEP 1: Install Node.js (If not already installed)
+-----------
+- Download from: https://nodejs.org/
+- Choose the LTS version (18.x or 20.x)
+- Install with default settings
+- Restart your PC after installation
+
+STEP 2: Extract the System
+-----------
+- Extract the "tablet-manager" folder to your desktop or C:\
+- Example: C:\tablet-manager\
+
+STEP 3: Install Dependencies
+-----------
+- Open the "tablet-manager" folder
+- Right-click anywhere and select "Open in Terminal" or "Open PowerShell here"
+- Type: npm install
+- Press Enter
+- Wait for installation to complete
+
+
+================================================================================
+4. FIRST TIME SETUP (TABLET) - DO THIS ONCE PER TABLET
+================================================================================
+
+STEP 1: Enable Developer Options
+-----------
+- Go to Settings → About Tablet
+- Find "Build Number" (may be under "Software Information")
+- Tap it 7 times quickly
+- You'll see: "You are now a developer!"
+
+STEP 2: Enable USB Debugging
+-----------
+- Go back to Settings → Developer Options
+- Turn ON the toggle at the top
+- Scroll down and turn ON "USB Debugging"
+- Turn ON "Stay awake" (optional but helpful)
+
+STEP 3: Enable Additional Settings (For Some Tablets)
+-----------
+- Some tablets need extra settings:
+  - Samsung: Turn ON "USB Debugging (Security settings)"
+  - Huawei: Turn ON "Allow HiSuite to connect"
+  - Xiaomi: Turn ON "USB Debugging (Security settings)"
+  - OnePlus: Turn ON "Disable permission monitoring"
+
+
+================================================================================
+5. ENABLING ADB OVER WIFI (ONE TIME PER TABLET)
+================================================================================
+
+This is the most important step. Do this ONCE per tablet.
+
+METHOD A: Using a USB Hub (Fastest for multiple tablets)
+-----------
+1. Connect all tablets to a USB hub
+2. Connect the hub to your PC
+3. Double-click "enable-all-wifi.bat"
+4. Wait for "COMPLETE" message
+5. Disconnect all USB cables
+6. Done! All tablets now work over WiFi
+
+METHOD B: One by One (No USB Hub needed)
+-----------
+Repeat for EACH tablet:
+1. Connect tablet via USB cable
+2. Double-click "enable-wifi-adb.bat"
+3. Wait for "DONE" message
+4. Disconnect USB cable
+5. Move to next tablet
+
+WHAT THE BATCH FILE DOES:
+-----------
+- Checks if your tablet is connected
+- Runs: adb tcpip 5555
+- This enables ADB over WiFi on port 5555
+- The tablet remembers this setting forever
+
+WHAT YOU SHOULD SEE:
+-----------
+restarting in TCP mode port: 5555
+[DONE] You can now disconnect the USB cable!
+
+
+================================================================================
+6. STARTING THE SERVER
+================================================================================
+
+EACH TIME YOU WANT TO USE THE SYSTEM:
+
+STEP 1: Start the Server
+-----------
+- Open the "tablet-manager" folder
+- Double-click "start.bat"
+- Select "Run as Administrator" if prompted
+- Keep this window OPEN (closing it stops the server)
+
+STEP 2: Verify Server Started
+-----------
+You should see:
+==================================================
+✅ Tablet Manager Server Running!
+==================================================
+📱 Open your browser to: http://localhost:3000
+==================================================
+
+STEP 3: Open Web Interface
+-----------
+- Open Chrome, Edge, or Firefox
+- Type: http://localhost:3000
+- Press Enter
+
+STEP 4: Find Your PC's Network IP (For Other Devices)
+-----------
+- Open PowerShell
+- Type: ipconfig
+- Look for "IPv4 Address" (e.g., 192.168.100.50)
+- Other devices on the same network can access at: http://192.168.100.50:3000
+
+
+================================================================================
+7. USING THE WEB INTERFACE
+================================================================================
+
+DASHBOARD (Main Page)
+-----------
+┌─────────────────────────────────────────────────────────────┐
+│  Total Devices  │  Online  │  Offline  │  APKs Available   │
+│       4         │    3     │     1     │         5         │
+└─────────────────────────────────────────────────────────────┘
+
+DEVICES TAB
+-----------
+Shows all tablets on your network:
+- Device Name (click to rename)
+- IP Address
+- Model (after clicking Detect)
+- Status (Online/Offline)
+- Android Version (after clicking Detect)
+- Battery % (after clicking Detect)
+- Installed Apps count
+- Action Buttons: Detect, Install, Delete
+
+ACTIONS ON DEVICES TAB:
+-----------
+┌────────────┬────────────────────────────────────────────┐
+│   Button   │                    What it does            │
+├────────────┼────────────────────────────────────────────┤
+│   Detect   │ Gets model, Android version, battery info  │
+│   Install  │ Opens menu to install APK(s) on this tablet│
+│   Delete   │ Removes tablet from the list               │
+│   (Name)   │ Click on name to rename the tablet         │
+└────────────┴────────────────────────────────────────────┘
+
+APK LIBRARY TAB
+-----------
+Shows all uploaded APK files:
+- File name
+- File size
+- Upload date
+- Delete button
+
+UPLOADING APKS:
+- Drag and drop APK file into the upload area
+- OR click the upload area to browse files
+- Click "Upload APK" button
+
+BULK INSTALL TAB
+-----------
+For installing multiple APKs on multiple tablets at once:
+- Select Devices (checkboxes)
+- Select APKs (checkboxes)
+- Click "Install on Selected Devices"
+- Watch progress bar
+- See detailed results
+
+
+================================================================================
+8. UPLOADING & INSTALLING APPS
+================================================================================
+
+UPLOAD AN APK (DO THIS FIRST)
+-----------
+1. Click "APK Library" tab
+2. Drag and drop your APK file into the upload area
+3. Click "Upload APK"
+4. Wait for "Upload complete!" message
+
+INSTALL ON A SINGLE TABLET
+-----------
+1. Go to "Devices" tab
+2. Find your tablet
+3. Click "Install" button
+4. Select an APK from the list
+   - Type a number for single APK
+   - Type "all" for all APKs
+5. Wait for confirmation
+
+INSTALL ON MULTIPLE TABLETS (Same APK)
+-----------
+1. Go to "Bulk Install" tab
+2. Select devices (check the boxes)
+3. Select ONE APK (radio button)
+4. Click "Install on Selected Devices"
+
+INSTALL MULTIPLE APKS ON MULTIPLE TABLETS
+-----------
+1. Go to "Bulk Install" tab
+2. Select devices (check the boxes)
+3. Select APKs (check the boxes)
+4. Click "Install on Selected Devices"
+5. Watch the progress bar
+6. Review detailed results
+
+
+================================================================================
+9. BULK INSTALL (MULTIPLE DEVICES + MULTIPLE APKS)
+================================================================================
+
+This is the most powerful feature of the system.
+
+EXAMPLE SCENARIO:
+-----------
+You have:
+- 10 classroom tablets
+- 3 educational apps to install
+
+WHAT YOU DO:
+1. Go to "Bulk Install" tab
+2. Check all 10 tablets
+3. Check all 3 APKs
+4. Click "Install on Selected Devices"
+
+WHAT HAPPENS:
+- System installs 3 APKs on each of 10 tablets
+- Total: 30 installations automatically
+- Progress bar shows status
+- Results show which succeeded/failed
+
+PROGRESS BAR:
+-----------
+[████████████████░░░░░░░░] 60%
+Progress: 18/30 installations (✅ 15 / ❌ 3)
+
+RESULTS DISPLAY:
+-----------
+📱 Classroom Tablet 1:
+  ✅ MathApp.apk
+  ✅ ReadingApp.apk
+  ❌ ScienceApp.apk: Device offline
+
+📱 Classroom Tablet 2:
+  ✅ MathApp.apk
+  ✅ ReadingApp.apk
+  ✅ ScienceApp.apk
+
+
+================================================================================
+10. ENROLL TAB - QR CODE SETUP (NO USB NEEDED!)
+================================================================================
+
+This tab allows you to connect new tablets WITHOUT a USB cable!
+
+HOW TO USE THE ENROLL TAB:
+-----------
+1. Go to the "Enroll Tablets" tab in the web interface
+2. A QR code will appear on your PC screen
+3. On your tablet, open the camera app
+4. Scan the QR code on the PC screen
+5. The tablet will open a webpage automatically
+6. Follow the on-screen instructions:
+   - Go to Settings → Developer Options
+   - Enable "Wireless Debugging"
+   - Tap "Pair device with pairing code"
+   - Enter the 6-digit code on the webpage
+7. Click "Pair & Connect"
+8. Done! Tablet is automatically enrolled
+
+WHAT YOU NEED FOR QR CODE ENROLLMENT:
+-----------
+- Tablet with Android 11 or higher
+- Tablet camera (to scan QR code)
+- Both devices on same WiFi network
+- Wireless Debugging enabled on tablet
+
+TROUBLESHOOTING QR CODE:
+-----------
+┌────────────────────────┬────────────────────────────────────────────┐
+│ QR code not appearing  │ Refresh the page or check server is running│
+│ Cannot scan QR code    │ Make sure tablet camera is working         │
+│ Page won't open        │ Check tablet is on same WiFi as PC         │
+│ Pairing fails          │ Restart Wireless Debugging on tablet       │
+└────────────────────────┴────────────────────────────────────────────┘
+
+
+================================================================================
+11. TROUBLESHOOTING
+================================================================================
+
+PROBLEM: Server won't start
+SOLUTION: 
+- Make sure Node.js is installed (node --version)
+- Run "npm install" again
+- Check if port 3000 is in use (close other programs)
+
+PROBLEM: Tablets not showing in list
+SOLUTION:
+- Wait 30 seconds (auto-scan runs every 30 seconds)
+- Click "Scan Now" button
+- Make sure tablets are on same WiFi as PC
+- Check tablet WiFi connection
+
+PROBLEM: Detect shows "Failed" or "Device offline"
+SOLUTION:
+- You forgot to run "enable-wifi-adb.bat" with USB connected
+- Reconnect tablet via USB and run the batch file again
+- Make sure tablet is on same WiFi network
+
+PROBLEM: QR code not showing in Enroll tab
+SOLUTION:
+- Restart the server (close start.bat and reopen)
+- Check that your PC has an IP address (run ipconfig)
+- Make sure port 3000 is accessible
+
+PROBLEM: ADB command not found
+SOLUTION:
+- Update ADB path in server.js and batch files
+- Default path: .\adb\platform-tools-latest-windows\platform-tools\adb.exe
+
+PROBLEM: "Connection refused" when connecting
+SOLUTION:
+- Tablet and PC must be on SAME WiFi network
+- Run "adb tcpip 5555" again with USB connected
+- Restart Wireless Debugging on tablet
+
+PROBLEM: Installation fails
+SOLUTION:
+- Make sure APK is compatible with tablet
+- Check tablet has enough storage space
+- Uninstall old version first if needed
+
+PROBLEM: Can't access web interface
+SOLUTION:
+- Make sure start.bat is running (window open)
+- Check URL: http://localhost:3000
+- Try http://127.0.0.1:3000
+- Check Windows Firewall settings
+
+PROBLEM: Tablet shows "unauthorized"
+SOLUTION:
+- On tablet, revoke USB debugging authorizations
+- Reconnect USB and approve the popup
+- Check "Always allow from this computer"
+
+PROBLEM: Huawei tablet not connecting
+SOLUTION:
+- Install HiSuite on PC
+- Enable "Allow HiSuite to connect" in Developer Options
+
+PROBLEM: Samsung tablet not connecting
+SOLUTION:
+- Install Samsung USB drivers
+- Enable "USB Debugging (Security settings)"
+- Use USB-C to USB-A cable (not USB-C to USB-C)
+
+
+================================================================================
+12. BATCH FILES EXPLAINED
+================================================================================
+
+┌────────────────────────┬───────────────────────────────────────────────────┐
+│      FILE NAME         │                    WHAT IT DOES                   │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ start.bat              │ Starts the server (run this first)                │
+│                        │ Keep this window open!                            │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ enable-wifi-adb.bat    │ Enables ADB over WiFi on ONE tablet               │
+│                        │ Connect tablet via USB first                      │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ enable-all-wifi.bat    │ Enables ADB over WiFi on ALL connected tablets    │
+│                        │ Use a USB hub for multiple tablets                │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ connect-tablet.bat     │ Manually connect to tablet by IP address          │
+│                        │ Use if auto-connect fails                         │
+├────────────────────────┼───────────────────────────────────────────────────┤
+│ quick-setup.bat        │ Complete setup: enable WiFi → disconnect → connect│
+│                        │ All-in-one batch file                             │
+└────────────────────────┴───────────────────────────────────────────────────┘
+
+
+================================================================================
+13. QUICK REFERENCE CARD
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         QUICK REFERENCE CARD                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  START SERVER:     Double-click "start.bat"                                │
+│  OPEN BROWSER:     http://localhost:3000                                   │
+│                                                                             │
+│  ENABLE TABLET:    Connect USB → Double-click "enable-wifi-adb.bat"        │
+│  ENABLE ALL:       Connect all USB → Double-click "enable-all-wifi.bat"    │
+│                                                                             │
+│  UPLOAD APK:       APK Library tab → Drag & drop → Upload                  │
+│  INSTALL ONE:      Devices tab → Install → Select APK                      │
+│  INSTALL MANY:     Bulk Install tab → Select devices & APKs → Install      │
+│                                                                             │
+│  ENROLL NEW TABLET: Enroll Tab → Scan QR code with tablet → Follow steps   │
+│                                                                             │
+│  GET DEVICE INFO:  Devices tab → Click "Detect"                            │
+│  RENAME DEVICE:    Devices tab → Click on name → Type new name             │
+│  DELETE DEVICE:    Devices tab → Click trash icon                          │
+│                                                                             │
+│  FIND PC IP:       PowerShell → ipconfig → IPv4 Address                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+✅ USB connection is only needed ONCE per tablet (for enable-wifi-adb.bat)
+✅ Use the batch files - no need to type commands!
+✅ All devices must be on the SAME WiFi network
+✅ The server PC must stay ON while managing tablets
+✅ Keep the start.bat window open - closing it stops the server
+✅ Tablets remember the WiFi setting after first setup
+✅ You can add/remove tablets at any time
+✅ QR code enrollment works for Android 11+ tablets without USB!
+
+
+================================================================================
+CONTACT & SUPPORT
+================================================================================
+
+SERVER INFORMATION:
+-------------------
+Local Access:    http://localhost:3000
+Network Access:  http://[YOUR_PC_IP]:3000
+Default Port:    3000
+
+TO FIND YOUR PC IP:
+-------------------
+1. Open PowerShell
+2. Type: ipconfig
+3. Look for "IPv4 Address"
+
+EXAMPLE:
+--------
+If your PC IP is 192.168.100.50, other devices can access at:
+http://192.168.100.50:3000
+
+
+================================================================================
+                                END OF GUIDE
+================================================================================

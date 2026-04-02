@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Uploaded files
+uploads/*.apk
+uploads/*.tmp
+
+# Database files
+tablets.json
+apks.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temp files
+*.tmp
+temp/

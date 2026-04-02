@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet Manager - User Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1c1f26;
+            color: #e0e0e0;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0b1a2e 0%, #1a2a3a 100%);
+            border-bottom: 3px solid #1cbea8;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo i {
+            font-size: 40px;
+            color: #1cbea8;
+        }
+
+        .title-container h1 {
+            color: #1cbea8;
+            font-size: 1.5rem;
+        }
+
+        .title-container .subtitle {
+            color: #b0bec5;
+            font-size: 0.9rem;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 90px);
+        }
+
+        /* Sidebar Tabs */
+        .sidebar {
+            width: 280px;
+            background: #2a2e38;
+            border-right: 1px solid #1cbea8;
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-tab {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #b0bec5;
+        }
+
+        .sidebar-tab i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-tab:hover {
+            background: #1c1f26;
+            color: #1cbea8;
+        }
+
+        .sidebar-tab.active {
+            background: #1cbea8;
+            color: #1c1f26;
+        }
+
+        .sidebar-tab.active i,
+        .sidebar-tab.active span {
+            color: #1c1f26;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 90px);
+        }
+
+        .content-page {
+            display: none;
+        }
+
+        .content-page.active {
+            display: block;
+        }
+
+        /* Typography */
+        h2 {
+            color: #1cbea8;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #1cbea8;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        h3 {
+            color: #1cbea8;
+            margin: 20px 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        h4 {
+            color: #b0bec5;
+            margin: 15px 0 8px 0;
+            font-size: 1.1rem;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #c0c0c0;
+        }
+
+        /* Cards */
+        .card {
+            background: #2a2e38;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1cbea8;
+        }
+
+        .card.warning {
+            border-left-color: #ff9800;
+        }
+
+        .card.success {
+            border-left-color: #4caf50;
+        }
+
+        .card.info {
+            border-left-color: #2196f3;
+        }
+
+        /* Step Box */
+        .step {
+            background: #1c1f26;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #1cbea8;
+            color: #1c1f26;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #1cbea8;
+        }
+
+        /* Code blocks */
+        code {
+            background: #1c1f26;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #1cbea8;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: #1c1f26;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #1cbea8;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #1cbea8;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #37474f;
+        }
+
+        .info-table th {
+            background: #1c1f26;
+            color: #1cbea8;
+        }
+
+        .info-table tr:hover {
+            background: #232831;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .badge-warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .badge-info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        /* Buttons */
+        .btn {
+            background: #1cbea8;
+            color: #1c1f26;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px 10px 0;
+        }
+
+        .btn:hover {
+            background: #159e8c;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #1cbea8;
+            color: #1cbea8;
+        }
+
+        .btn-outline:hover {
+            background: #1cbea8;
+            color: #1c1f26;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 800px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: #0f1a24;
+            border-top: 2px solid #1cbea8;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #b0bec5;
+        }
+
+        .footer span {
+            color: #1cbea8;
+            font-weight: bold;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1c1f26;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1cbea8;
+            border-radius: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #1cbea8;
+                padding: 10px;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .sidebar-tab {
+                display: inline-flex;
+                margin: 5px;
+            }
+            .main-content {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-tablet-alt"></i>
+        </div>
+        <div class="title-container">
+            <h1>Tablet Management System</h1>
+            <div class="subtitle">Complete User Guide • Version 2.0</div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-tab active" data-page="overview">
+                <i class="fas fa-home"></i>
+                <span>Overview</span>
+            </div>
+            <div class="sidebar-tab" data-page="setup-pc">
+                <i class="fas fa-desktop"></i>
+                <span>PC Setup</span>
+            </div>
+            <div class="sidebar-tab" data-page="setup-tablet">
+                <i class="fas fa-tablet-alt"></i>
+                <span>Tablet Setup</span>
+            </div>
+            <div class="sidebar-tab" data-page="enable-wifi">
+                <i class="fas fa-wifi"></i>
+                <span>Enable ADB over WiFi</span>
+            </div>
+            <div class="sidebar-tab" data-page="start-server">
+                <i class="fas fa-play"></i>
+                <span>Start Server</span>
+            </div>
+            <div class="sidebar-tab" data-page="web-interface">
+                <i class="fas fa-globe"></i>
+                <span>Web Interface</span>
+            </div>
+            <div class="sidebar-tab" data-page="upload-apks">
+                <i class="fas fa-upload"></i>
+                <span>Upload APKs</span>
+            </div>
+            <div class="sidebar-tab" data-page="install-apps">
+                <i class="fas fa-download"></i>
+                <span>Install Apps</span>
+            </div>
+            <div class="sidebar-tab" data-page="bulk-install">
+                <i class="fas fa-rocket"></i>
+                <span>Bulk Install</span>
+            </div>
+            <div class="sidebar-tab" data-page="enroll-tab">
+                <i class="fas fa-qrcode"></i>
+                <span>Enroll Tab (QR Code)</span>
+            </div>
+            <div class="sidebar-tab" data-page="troubleshooting">
+                <i class="fas fa-bug"></i>
+                <span>Troubleshooting</span>
+            </div>
+            <div class="sidebar-tab" data-page="batch-files">
+                <i class="fas fa-file-code"></i>
+                <span>Batch Files</span>
+            </div>
+            <div class="sidebar-tab" data-page="quick-reference">
+                <i class="fas fa-keyboard"></i>
+                <span>Quick Reference</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Overview Page -->
+            <div id="overview" class="content-page active">
+                <h2><i class="fas fa-home"></i> System Overview</h2>
+                <p>The Tablet Management System allows you to control multiple Android tablets from one central PC. Upload APKs, install apps on multiple devices simultaneously, and monitor device status - all from a beautiful web interface.</p>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3><i class="fas fa-check-circle"></i> Features</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>✅ Auto-discovery of tablets on network</li>
+                            <li>✅ Multiple APK management</li>
+                            <li>✅ Bulk install on multiple devices</li>
+                            <li>✅ Device info detection (model, Android, battery)</li>
+                            <li>✅ Wireless ADB - no USB after setup</li>
+                            <li>✅ QR code enrollment (Android 11+)</li>
+                            <li>✅ No internet required - works offline</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-microchip"></i> Requirements</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li>💻 Windows 10/11 PC</li>
+                            <li>📱 Android tablets (11+ recommended)</li>
+                            <li>🔌 USB cables (data transfer capable)</li>
+                            <li>🌐 Same WiFi network for all devices</li>
+                            <li>📦 Node.js (included in package)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card success">
+                    <h3><i class="fas fa-hourglass-half"></i> Quick Setup Summary</h3>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">Install Node.js and run <code>npm install</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">Enable Developer Options & USB Debugging on tablet</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">Connect tablet via USB and run <code>enable-wifi-adb.bat</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">Disconnect USB - tablet now works over WiFi</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">Double-click <code>start.bat</code> and open <code>http://localhost:3000</code></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">Click <strong>Detect</strong> on your tablet - Done!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PC Setup Page -->
+            <div id="setup-pc" class="content-page">
+                <h2><i class="fas fa-desktop"></i> PC Setup</h2>
+                
+                <h3>Step 1: Install Node.js</h3>
+                <div class="card">
+                    <p>Node.js is required to run the server. Download and install the LTS version:</p>
+                    <a href="https://nodejs.org/" target="_blank" class="btn">Download Node.js</a>
+                    <p><small>Choose the LTS version (18.x or 20.x). Install with default settings.</small></p>
+                </div>
+
+                <h3>Step 2: Extract the System</h3>
+                <div class="card">
+                    <p>Extract the <code>tablet-manager</code> folder to your desired location:</p>
+                    <pre><code>C:\tablet-manager\</code></pre>
+                </div>
+
+                <h3>Step 3: Install Dependencies</h3>
+                <div class="card">
+                    <p>Open PowerShell/Terminal in the <code>tablet-manager</code> folder and run:</p>
+                    <pre><code>npm install</code></pre>
+                    <p>Wait for all packages to install. You'll see a <code>node_modules</code> folder created.</p>
+                </div>
+
+                <h3>Step 4: Verify ADB</h3>
+                <div class="card">
+                    <p>Check that ADB is working:</p>
+                    <pre><code>.\adb\platform-tools-latest-windows\platform-tools\adb.exe version</code></pre>
+                    <p>You should see version information.</p>
+                </div>
+            </div>
+
+            <!-- Tablet Setup Page -->
+            <div id="setup-tablet" class="content-page">
+                <h2><i class="fas fa-tablet-alt"></i> Tablet Setup (Do Once Per Tablet)</h2>
+                
+                <h3>Step 1: Enable Developer Options</h3>
+                <div class="card">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">Go to <strong>Settings → About Tablet</strong></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">Find <strong>Build Number</strong> (may be under "Software Information")</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">Tap it <strong>7 times</strong> quickly</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">You'll see: <strong>"You are now a developer!"</strong></div>
+                    </div>
+                </div>
+
+                <h3>Step 2: Enable USB Debugging</h3>
+                <div class="card">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">Go to <strong>Settings → Developer Options</strong></div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">Turn <strong>ON</strong> the toggle at the top</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">Turn <strong>ON</strong> USB Debugging</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">Turn <strong>ON</strong> "Stay awake" (optional)</div>
+                    </div>
+                </div>
+
+                <div class="card warning">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Additional Settings by Brand</h3>
+                    <table class="info-table">
+                        <tr><th>Brand</th><th>Extra Setting</th></tr>
+                        <tr><td>Samsung</td><td>Turn ON "USB Debugging (Security settings)"</td></tr>
+                        <tr><td>Huawei</td><td>Turn ON "Allow HiSuite to connect"</td></tr>
+                        <tr><td>Xiaomi</td><td>Turn ON "USB Debugging (Security settings)"</td></tr>
+                        <tr><td>OnePlus</td><td>Turn ON "Disable permission monitoring"</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Enable ADB over WiFi Page -->
+            <div id="enable-wifi" class="content-page">
+                <h2><i class="fas fa-wifi"></i> Enable ADB over WiFi</h2>
+                <p>This is the most important step. Do this <strong>ONCE per tablet</strong>. After this, the tablet will always connect wirelessly.</p>
+
+                <h3>Method A: Using a USB Hub (Fastest for multiple tablets)</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Connect all tablets to a USB hub</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Connect the hub to your PC</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Double-click <code>enable-all-wifi.bat</code></div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Wait for "COMPLETE" message</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-content">Disconnect all USB cables</div></div>
+                </div>
+
+                <h3>Method B: One by One (No USB Hub)</h3>
+                <div class="card">
+                    <p>Repeat for EACH tablet:</p>
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Connect tablet via USB cable</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Double-click <code>enable-wifi-adb.bat</code></div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Wait for "DONE" message</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Disconnect USB cable</div></div>
+                </div>
+
+                <div class="card success">
+                    <h3><i class="fas fa-check-circle"></i> What You Should See</h3>
+                    <pre><code>restarting in TCP mode port: 5555
+[DONE] You can now disconnect the USB cable!</code></pre>
+                </div>
+            </div>
+
+            <!-- Start Server Page -->
+            <div id="start-server" class="content-page">
+                <h2><i class="fas fa-play"></i> Start the Server</h2>
+                
+                <h3>Each time you want to use the system:</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Open the <code>tablet-manager</code> folder</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Double-click <code>start.bat</code></div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Select <strong>"Run as Administrator"</strong> if prompted</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Keep this window <strong>OPEN</strong> (closing it stops the server)</div></div>
+                </div>
+
+                <h3>Verify Server Started</h3>
+                <div class="card">
+                    <p>You should see:</p>
+                    <pre><code>==================================================
+✅ Tablet Manager Server Running!
+==================================================
+📱 Open your browser to: http://localhost:3000
+==================================================</code></pre>
+                </div>
+
+                <h3>Open Web Interface</h3>
+                <div class="card">
+                    <p>Open Chrome, Edge, or Firefox and go to:</p>
+                    <pre><code>http://localhost:3000</code></pre>
+                </div>
+
+                <h3>Access from Other Devices</h3>
+                <div class="card">
+                    <p>Find your PC's IP address:</p>
+                    <pre><code>ipconfig</code></pre>
+                    <p>Look for <strong>IPv4 Address</strong> (e.g., 192.168.100.50)</p>
+                    <p>Other devices on same network can access at:</p>
+                    <pre><code>http://192.168.100.50:3000</code></pre>
+                </div>
+            </div>
+
+            <!-- Web Interface Page -->
+            <div id="web-interface" class="content-page">
+                <h2><i class="fas fa-globe"></i> Web Interface Guide</h2>
+
+                <h3>Dashboard</h3>
+                <div class="card">
+                    <p>Shows key statistics:</p>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Total Devices</strong> - All tablets discovered</li>
+                        <li><strong>Online</strong> - Tablets currently connected</li>
+                        <li><strong>Offline</strong> - Tablets not responding</li>
+                        <li><strong>APKs Available</strong> - Apps uploaded to system</li>
+                    </ul>
+                </div>
+
+                <h3>Devices Tab</h3>
+                <div class="card">
+                    <p>Shows all tablets on your network. You can:</p>
+                    <table class="info-table">
+                        <tr><th>Action</th><th>How to do it</th></tr>
+                        <tr><td><strong>Rename Device</strong></td><td>Click on the device name and type</td></tr>
+                        <tr><td><strong>Get Device Info</strong></td><td>Click <span class="badge badge-info">Detect</span> button</td></tr>
+                        <tr><td><strong>Install Apps</strong></td><td>Click <span class="badge badge-success">Install</span> button</td></tr>
+                        <tr><td><strong>Remove Device</strong></td><td>Click <span class="badge badge-warning">Delete</span> button</td></tr>
+                    </table>
+                </div>
+
+                <div class="card success">
+                    <h3><i class="fas fa-info-circle"></i> After Clicking "Detect"</h3>
+                    <p>You will see:</p>
+                    <ul>
+                        <li>✅ Manufacturer and Model (e.g., "Samsung SM-T500")</li>
+                        <li>✅ Android Version (e.g., "13")</li>
+                        <li>✅ Battery Percentage (e.g., "85%")</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Upload APKs Page -->
+            <div id="upload-apks" class="content-page">
+                <h2><i class="fas fa-upload"></i> Upload APKs</h2>
+                
+                <h3>How to Upload an APK</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Click <strong>APK Library</strong> tab</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Drag and drop your APK file into the upload area</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Click <strong>Upload APK</strong> button</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Wait for "Upload complete!" message</div></div>
+                </div>
+
+                <h3>Manage APK Library</h3>
+                <div class="card">
+                    <p>Each uploaded APK shows:</p>
+                    <ul>
+                        <li>📄 File name</li>
+                        <li>💾 File size in MB</li>
+                        <li>📅 Upload date</li>
+                        <li>🗑️ Delete button to remove</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Install Apps Page -->
+            <div id="install-apps" class="content-page">
+                <h2><i class="fas fa-download"></i> Install Apps</h2>
+
+                <h3>Install on a Single Tablet</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Go to <strong>Devices</strong> tab</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Find your tablet</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Click <strong>Install</strong> button</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Enter number for single APK, or type <code>all</code> for all APKs</div></div>
+                </div>
+
+                <h3>Install Same APK on Multiple Tablets</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Go to <strong>Bulk Install</strong> tab</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Select devices (check boxes)</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Select ONE APK (radio button)</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Click <strong>Install on Selected Devices</strong></div></div>
+                </div>
+            </div>
+
+            <!-- Bulk Install Page -->
+            <div id="bulk-install" class="content-page">
+                <h2><i class="fas fa-rocket"></i> Bulk Install</h2>
+                <p>This is the most powerful feature - install <strong>multiple APKs on multiple tablets</strong> at once!</p>
+
+                <div class="card success">
+                    <h3><i class="fas fa-star"></i> Example Scenario</h3>
+                    <p>You have 10 classroom tablets and 3 educational apps to install.</p>
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Go to <strong>Bulk Install</strong> tab</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Check all 10 tablets</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Check all 3 APKs</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Click <strong>Install on Selected Devices</strong></div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-content">Watch progress bar - 30 installations automatically!</div></div>
+                </div>
+
+                <h3>Progress Bar & Results</h3>
+                <div class="card">
+                    <pre><code>[████████████████░░░░░░░░] 60%
+Progress: 18/30 installations (✅ 15 / ❌ 3)</code></pre>
+                    <p>Results show per-device, per-APK status:</p>
+                    <pre><code>📱 Classroom Tablet 1:
+  ✅ MathApp.apk
+  ✅ ReadingApp.apk
+  ❌ ScienceApp.apk: Device offline</code></pre>
+                </div>
+            </div>
+
+            <!-- Enroll Tab Page -->
+            <div id="enroll-tab" class="content-page">
+                <h2><i class="fas fa-qrcode"></i> Enroll Tab - QR Code Setup</h2>
+                <p>This tab allows you to connect new tablets <strong>without a USB cable!</strong> Works on Android 11+ devices.</p>
+
+                <div class="card success">
+                    <h3><i class="fas fa-star"></i> How to Use the Enroll Tab</h3>
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Go to the <strong>Enroll Tablets</strong> tab in the web interface</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">A QR code will appear on your PC screen</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">On your tablet, open the camera app</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Scan the QR code on the PC screen</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-content">The tablet will open a webpage automatically</div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-content">Follow the on-screen instructions</div></div>
+                </div>
+
+                <h3>What You Need</h3>
+                <div class="card">
+                    <ul>
+                        <li>✅ Tablet with Android 11 or higher</li>
+                        <li>✅ Tablet camera (to scan QR code)</li>
+                        <li>✅ Both devices on same WiFi network</li>
+                        <li>✅ Wireless Debugging enabled on tablet</li>
+                    </ul>
+                </div>
+
+                <h3>On-Tablet Steps (After Scanning QR Code)</h3>
+                <div class="card">
+                    <div class="step"><div class="step-number">1</div><div class="step-content">Go to <strong>Settings → Developer Options</strong></div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-content">Enable <strong>Wireless Debugging</strong></div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-content">Tap <strong>"Pair device with pairing code"</strong></div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-content">Enter the 6-digit code on the webpage</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-content">Click <strong>Pair & Connect</strong></div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-content">Done! Tablet is automatically enrolled</div></div>
+                </div>
+
+                <div class="card warning">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Troubleshooting QR Code</h3>
+                    <table class="info-table">
+                        <tr><th>Problem</th><th>Solution</th></tr>
+                        <tr><td>QR code not appearing</td><td>Refresh the page or check server is running</td></tr>
+                        <tr><td>Cannot scan QR code</td><td>Make sure tablet camera is working</td></tr>
+                        <tr><td>Page won't open</td><td>Check tablet is on same WiFi as PC</td></tr>
+                        <tr><td>Pairing fails</td><td>Restart Wireless Debugging on tablet</td></tr>
+                        <tr><td>Connection timeout</td><td>Make sure no firewall is blocking port 3000</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Troubleshooting Page -->
+            <div id="troubleshooting" class="content-page">
+                <h2><i class="fas fa-bug"></i> Troubleshooting</h2>
+
+                <table class="info-table">
+                    <tr><th>Problem</th><th>Solution</th></tr>
+                    <tr><td>Tablet not showing in list</td><td>Wait 30 seconds or click "Scan Now" button</td></tr>
+                    <tr><td>Detect shows "Failed"</td><td>Run "enable-wifi-adb.bat" with USB connected first</td></tr>
+                    <tr><td>"Device offline" message</td><td>Make sure tablet is on same WiFi network as PC</td></tr>
+                    <tr><td>QR code not showing in Enroll tab</td><td>Restart server, check IP address, port 3000</td></tr>
+                    <tr><td>ADB command not found</td><td>Update ADB path in server.js and batch files</td></tr>
+                    <tr><td>"Connection refused"</td><td>Run "adb tcpip 5555" again with USB connected</td></tr>
+                    <tr><td>Installation fails</td><td>Check APK compatibility and tablet storage space</td></tr>
+                    <tr><td>Tablet shows "unauthorized"</td><td>Revoke USB debugging and re-approve</td></tr>
+                    <tr><td>Huawei tablet not connecting</td><td>Install HiSuite and enable "Allow HiSuite to connect"</td></tr>
+                    <tr><td>Samsung tablet not connecting</td><td>Install Samsung USB drivers, use USB-A cable</td></tr>
+                </table>
+
+                <div class="card warning">
+                    <h3><i class="fas fa-lightbulb"></i> Quick Fixes</h3>
+                    <ul>
+                        <li>Restart Wireless Debugging on tablet</li>
+                        <li>Restart the server (close start.bat and reopen)</li>
+                        <li>Check both devices are on same WiFi</li>
+                        <li>Try a different USB cable (data transfer capable)</li>
+                        <li>Disable Windows Firewall temporarily to test</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Batch Files Page -->
+            <div id="batch-files" class="content-page">
+                <h2><i class="fas fa-file-code"></i> Batch Files Explained</h2>
+
+                <table class="info-table">
+                    <tr><th>File Name</th><th>What it does</th></tr>
+                    <tr><td><code>start.bat</code></td><td>Starts the server (run this first). Keep window open!</td></tr>
+                    <tr><td><code>enable-wifi-adb.bat</code></td><td>Enables ADB over WiFi on ONE tablet</td></tr>
+                    <tr><td><code>enable-all-wifi.bat</code></td><td>Enables ADB over WiFi on ALL connected tablets</td></tr>
+                    <tr><td><code>connect-tablet.bat</code></td><td>Manually connect to tablet by IP address</td></tr>
+                    <tr><td><code>quick-setup.bat</code></td><td>Complete setup: enable WiFi → disconnect → connect</td></tr>
+                </table>
+
+                <div class="card info">
+                    <h3><i class="fas fa-info-circle"></i> Pro Tip</h3>
+                    <p>You never need to type commands! Just double-click the batch files.</p>
+                </div>
+            </div>
+
+            <!-- Quick Reference Page -->
+            <div id="quick-reference" class="content-page">
+                <h2><i class="fas fa-keyboard"></i> Quick Reference Card</h2>
+
+                <div class="card">
+                    <pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    QUICK REFERENCE CARD                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  START SERVER:     Double-click "start.bat"                │
+│  OPEN BROWSER:     http://localhost:3000                   │
+│                                                             │
+│  ENABLE TABLET:    Connect USB → Double-click              │
+│                    "enable-wifi-adb.bat"                   │
+│                                                             │
+│  ENABLE ALL:       Connect all USB → Double-click          │
+│                    "enable-all-wifi.bat"                   │
+│                                                             │
+│  UPLOAD APK:       APK Library tab → Drag & drop → Upload  │
+│                                                             │
+│  INSTALL ONE:      Devices tab → Install → Select APK      │
+│                                                             │
+│  INSTALL MANY:     Bulk Install tab → Select devices &     │
+│                    APKs → Install                          │
+│                                                             │
+│  ENROLL TABLET:    Enroll Tab → Scan QR code → Follow      │
+│                    on-screen instructions                  │
+│                                                             │
+│  GET DEVICE INFO:  Devices tab → Click "Detect"            │
+│                                                             │
+│  RENAME DEVICE:    Devices tab → Click on name → Type      │
+│                                                             │
+│  FIND PC IP:       PowerShell → ipconfig → IPv4 Address    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+                </div>
+
+                <div class="card success">
+                    <h3><i class="fas fa-heart"></i> Important Notes</h3>
+                    <ul>
+                        <li>✅ USB connection is only needed ONCE per tablet</li>
+                        <li>✅ Use batch files - no need to type commands!</li>
+                        <li>✅ All devices must be on the SAME WiFi network</li>
+                        <li>✅ Keep the start.bat window open</li>
+                        <li>✅ Tablets remember WiFi setting forever</li>
+                        <li>✅ QR code enrollment works for Android 11+ devices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-text">© 2026 <span>Tablet Management System</span>. All rights reserved.</div>
+        <div style="color: #4a5a6a; font-size: 0.8rem;">Version 2.0 • Open Source • Free to Use</div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.sidebar-tab');
+        const pages = document.querySelectorAll('.content-page');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const pageId = tab.getAttribute('data-page');
+                
+                // Remove active class from all tabs and pages
+                tabs.forEach(t => t.classList.remove('active'));
+                pages.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding page
+                const activePage = document.getElementById(pageId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
