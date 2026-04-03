@@ -4,7 +4,7 @@
 
 ![Version](https://img.shields.io/badge/version-2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows-green)
-![Node](https://img.shields.io/badge/node-18%2B-brightgreen)
+![Node](https://img.shields.io/badge/Node.js-18%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 **Complete Android Tablet Management Solution for Enterprises and Classrooms**
