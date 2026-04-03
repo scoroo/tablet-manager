@@ -4,7 +4,7 @@
 
 ![Version](https://img.shields.io/badge/version-2.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows-green)
-![Node](https://img.shields.io/badge/Node.js-blue)
+![Node](https://img.shields.io/badge/Node.js-v24-blue)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 **Complete Android Tablet Management Solution for Enterprises and Classrooms**
@@ -33,7 +33,7 @@
 | Component  | Requirement           |
 | ---------- | --------------------- |
 | 💻 OS      | Windows 10 / 11       |
-| 📦 Node.js | 18+                   |
+| 📦 Node.js | v24                   |
 | 🧠 RAM     | 4GB (8GB recommended) |
 | 🌐 Network | WiFi / Ethernet       |
 | 📱 Tablets | Android 11+           |
