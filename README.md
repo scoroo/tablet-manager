@@ -189,6 +189,3 @@ Made with ❤️ for easy tablet management
 </div>
 
 
-```bash
-git clone https://github.com/scoroo/tablet-manager.git
-cd tablet-manager
